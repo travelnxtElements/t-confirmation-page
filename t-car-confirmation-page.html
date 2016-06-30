@@ -1,27 +1,149 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../t-notify/t-notify.html">
+<link rel="import" href="../t-faredetails/t-faredetails.html">
+<link rel="import" href="../t-car-itinerary-details/t-car-itinerary-details.html">
+<link rel="import" href="../t-section-header/t-section-header.html">
+<link rel="import" href="../t-header/t-header.html">
+<link rel="import" href="../t-text-container/travel-element-styles.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html"/>
+<link rel="import" href="../t-sessionstorage/t-sessionstorage.html">
 
 <dom-module id="t-car-confirmation-page">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]</h2>
-  </template>
+    <template>
+        <style include="iron-flex-layout-classes"></style>
+        <style include="travel-element-styles">
+            :host, t-button {
+                display: block;
+            }
+        </style>
 
-  <script>
-    Polymer({
+        <content select="t-header"></content>
 
-      is: 't-car-confirmation-page',
+        <t-notify id="notify"></t-notify>
 
-      properties: {
-        prop1: {
-          type: String,
-          value: 't-car-confirmation-page',
-        },
-      },
+        <t-section-header label="Trip Summary"></t-section-header>
+        
+        <t-car-itinerary-details
+            id="itineraryDetails"
+            is-collapsible
+            itinerary="[[bookedItinerary.itinerary]]"
+            search-criteria=[[bookedItinerary.searchCriteria]]>
+        </t-car-itinerary-details>
 
-    });
-  </script>
+        <t-section-header label="Guest Info"></t-section-header>
+
+        <div class="section-small font-12">
+            <template is="dom-repeat" items="{{bookedItinerary.passengers}}">
+                [[item.title]] [[item.firstName]] [[item.lastName]], Confirmation # - [[bookedItinerary.confirmationNumber]] 
+            </template>
+        </div>
+
+        <t-sessionstorage
+            id="sessionStore"
+            key="Car_Booked_Itinerary"
+            api-url-format="{{apiUrlFormat}}"
+            on-t-sessionstorage-load-success="_onSessionLoad">
+        </t-sessionstorage>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: 't-car-confirmation-page',
+
+            properties: {
+
+                visible: {
+                  type: Boolean,
+                  value: true,
+                  notify: true,
+                  observer: '_showConfirmation'
+                },
+
+                /*
+                 * <p>This string is query string containing token value</p>
+                */
+                authToken: {
+                    type: String,
+                    value: ''
+                },
+
+                /*
+                 * <p>This property holds the value of api base URL</p>
+                */
+                apiBaseUrl: {
+                    type: String,
+                    value: ''
+                },
+
+                /*
+                 * <p>This property holds the value of web api URL format</p>
+                */
+                apiUrlFormat: {
+                    type: String,
+                    value: ''
+                },
+
+                /*
+                 * <p>This property holds the value of web api URL format</p>
+                */
+                bookedItinerary: {
+                    type: Object
+                },
+            },
+
+            _onSessionLoad: function () {
+                if (!this.$.sessionStore.value) {
+                    this.$.notify.message = 'Booked itinerary not found!';
+                    this.$.notify.active = true;
+                    this.fire('confirmation-error');
+                    return;
+                }
+
+                this.bookedItinerary = this._translateItinerary(this.$.sessionStore.value);
+                this._getConfirmationMessage();
+            },
+
+            _showConfirmation: function () {
+                if (!this.visible) {
+                    return;
+                }
+
+                this.$.notify.active = false;
+
+                if (!this.bookedItinerary) {
+                    this.$.sessionStore.load();
+                    return;
+                }
+
+                this._getConfirmationMessage();
+            },
+
+            _getConfirmationMessage: function () {
+
+                this.$.notify.type = 'success'
+                this.$.notify.message = 'Confirmation page loaded successfully!';
+                this.$.notify.active = true;
+                this.fire('confirmation-success');
+            },
+
+        _translateItinerary: function (bookedItinerary) {
+
+            bookedItinerary.inventoriesInfo[0].searchCriteria.pickupTime = bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate.time;
+            bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate = bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate.date;
+
+            bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffTime = bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffDate.time;
+            bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffDate = bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffDate.date;
+
+            return {                            
+                confirmationNumber: bookedItinerary.confirmationNumber,
+                bookingStatus: bookedItinerary.bookingStatus,
+                name: bookedItinerary.name,
+                itinerary: bookedItinerary.inventoriesInfo[0].inventory,
+                searchCriteria: bookedItinerary.inventoriesInfo[0].searchCriteria,
+                passengers: bookedItinerary.passengers
+            };
+        }
+        });
+    </script>
 </dom-module>

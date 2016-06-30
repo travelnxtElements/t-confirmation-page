@@ -1,29 +1,22 @@
 <!doctype html>
 <html>
-  <head>
-    <title>t-car-confirmation-page demo</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <head>
+        <title>t-car-confirmation-page demo</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+        <link rel="import" href="../t-car-confirmation-page.html">
+        <link rel="import" href="../../t-shared-components/theme.html">
+    </head>
 
-    <link rel="import" href="../t-car-confirmation-page.html">
-
-    <style is="custom-style" include="demo-pages-shared-styles">
-    </style>
-  </head>
-  <body>
-
-    <div class="vertical-section-container centered">
-      <h3>Basic t-car-confirmation-page Demo</h3>
-      <demo-snippet>
-        <template>
-          <t-car-confirmation-page></t-car-confirmation-page>
-        </template>
-      </demo-snippet>
-    </div>
-
-  </body>
+    <body>
+        <t-car-confirmation-page>
+            <t-header
+                icon="bgv:arrow-left"
+                label="Guest Info"
+                normal-heading>
+            </t-header>
+        </t-car-confirmation-page>
+    </body>
 </html>
