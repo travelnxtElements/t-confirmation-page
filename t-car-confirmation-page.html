@@ -7,6 +7,7 @@
 <link rel="import" href="../t-text-container/travel-element-styles.html">
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html"/>
 <link rel="import" href="../t-sessionstorage/t-sessionstorage.html">
+<link rel="import" href="../t-shared-lib/t-date-behavior.html">
 
 <dom-module id="t-car-confirmation-page">
     <template>
@@ -34,6 +35,12 @@
             itinerary="[[bookedItinerary.itinerary]]"
             search-criteria=[[bookedItinerary.searchCriteria]]>
         </t-car-itinerary-details>
+
+        <t-faredetails 
+          id="fareDetails"
+          is-collapsible
+          itinerary-fare-label="Car Rental">
+        </t-faredetails>
 
         <t-section-header label="Guest Info"></t-section-header>
 
@@ -65,6 +72,10 @@
     <script>
         Polymer({
             is: 't-car-confirmation-page',
+
+            behaviors: [
+                TravelNxt.Behaviors.DateBehavior
+            ],
 
             properties: {
 
@@ -128,6 +139,7 @@
 
                 if (!this.bookedItinerary) {
                     this.$.sessionStore.load();
+                    this._setFareDetails();
                     return;
                 }
 
@@ -142,6 +154,24 @@
                 this.fire('confirmation-success');
             },
 
+            _setFareDetails: function () {
+                if (!this.bookedItinerary || !this.bookedItinerary.itinerary || !this.bookedItinerary.searchCriteria) {
+                    return;
+                }
+
+                var formattedDate = this._getDateComponents(this.bookedItinerary.searchCriteria.pickupDate);
+                this.pickupDate = formattedDate.date + ' ' + formattedDate.shortMonth + ' ' + this.bookedItinerary.searchCriteria.pickupTime;
+
+                formattedDate = this._getDateComponents(this.bookedItinerary.searchCriteria.dropoffDate);
+                this.dropoffDate = formattedDate.date + ' ' + formattedDate.shortMonth + ' ' + this.bookedItinerary.searchCriteria.dropoffTime;
+
+                this.$.fareDetails.baseFareLabel = 'Avg. per day rate x ' + this._dateDiff(this.pickupDate, this.dropoffDate);
+
+                if (this.bookedItinerary.itinerary.fare && this.bookedItinerary.itinerary.fare.components) {
+                    this.$.fareDetails.data = this.bookedItinerary.itinerary.fare.components;
+                }
+            },
+
             _camelize: function (str) {
                 if (!arguments.length) {
                     return;
@@ -152,7 +182,6 @@
                 return letter.toUpperCase();
                 }).replace(/\s+/g, ' ');
             },
-
         _translateItinerary: function (bookedItinerary) {
 
             bookedItinerary.inventoriesInfo[0].searchCriteria.pickupTime = bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate.time;
