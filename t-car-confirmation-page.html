@@ -27,7 +27,7 @@
 
         <t-notify id="notify"></t-notify>
 
-        <t-section-header label="Trip Summary"></t-section-header>
+        <t-section-header class="margin-bottom" label="Trip Summary"></t-section-header>
         
         <t-car-itinerary-details
             id="itineraryDetails"
@@ -42,7 +42,15 @@
           itinerary-fare-label="Car Rental">
         </t-faredetails>
 
-        <t-section-header label="Guest Info"></t-section-header>
+        <template is="dom-if" if="[[bookedItinerary.itinerary.isPostPaid]]">
+            <div class="layout horizontal section-small payable">
+                <span class="secondary-text">Due at pick-up</span>
+                <span class="flex"></span>
+                <span>[[bookedItinerary.paymentBreakup.amount.currency]] [[bookedItinerary.paymentBreakup.amount.amount]]</span>
+            </div>
+        </template>
+
+        <t-section-header class="margin-bottom" label="Guest Info"></t-section-header>
 
         <div class="section-small font-14 layout horizontal">
             <template is="dom-repeat" items="{{bookedItinerary.passengers}}">
@@ -52,13 +60,7 @@
             </template>
         </div>
 
-        <template is="dom-if" if="[[bookedItinerary.itinerary.isPostPaid]]">
-            <div class="layout horizontal section-small payable">
-                <span class="secondary-text">Due At Pickup</span>
-                <span class="flex"></span>
-                <span>[[bookedItinerary.paymentBreakup.amount.currency]] [[bookedItinerary.paymentBreakup.amount.amount]]</span>
-            </div>
-        </template>
+        
 
         <t-sessionstorage
             id="sessionStore"
@@ -139,6 +141,7 @@
 
                 if (!this.bookedItinerary) {
                     this.$.sessionStore.load();
+                    this.$.itineraryDetails.setDetails();
                     this._setFareDetails();
                     return;
                 }
