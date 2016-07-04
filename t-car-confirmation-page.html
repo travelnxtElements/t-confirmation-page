@@ -10,10 +10,15 @@
 
 <dom-module id="t-car-confirmation-page">
     <template>
-        <style include="iron-flex-layout-classes"></style>
+        <style include="iron-flex"></style>
         <style include="travel-element-styles">
-            :host, t-button {
+            :host {
                 display: block;
+                font-family: var(--header-font-family, --primary-font-family);
+                font-size: var(--font-14, 14px);
+            }
+            .payable {
+                font-size: var(--font-18, 18px);
             }
         </style>
 
@@ -32,11 +37,21 @@
 
         <t-section-header label="Guest Info"></t-section-header>
 
-        <div class="section-small font-12">
+        <div class="section-small font-14 layout horizontal">
             <template is="dom-repeat" items="{{bookedItinerary.passengers}}">
-                [[item.title]] [[item.firstName]] [[item.lastName]], Confirmation # - [[bookedItinerary.confirmationNumber]] 
+                <span class="name flex font-16">{{_camelize(item.firstName, item.lastName)}}</span>
+                <span class="secondary-text">Confirmation # -&nbsp;</span>
+                <span class=""> [[bookedItinerary.confirmationNumber]]</span>
             </template>
         </div>
+
+        <template is="dom-if" if="[[bookedItinerary.itinerary.isPostPaid]]">
+            <div class="layout horizontal section-small payable">
+                <span class="secondary-text">Due At Pickup</span>
+                <span class="flex"></span>
+                <span>[[bookedItinerary.paymentBreakup.amount.currency]] [[bookedItinerary.paymentBreakup.amount.amount]]</span>
+            </div>
+        </template>
 
         <t-sessionstorage
             id="sessionStore"
@@ -127,6 +142,17 @@
                 this.fire('confirmation-success');
             },
 
+            _camelize: function (str) {
+                if (!arguments.length) {
+                    return;
+                }
+                var str = Array.prototype.slice.call(arguments);
+                str = str.join(' ');
+                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+                return letter.toUpperCase();
+                }).replace(/\s+/g, ' ');
+            },
+
         _translateItinerary: function (bookedItinerary) {
 
             bookedItinerary.inventoriesInfo[0].searchCriteria.pickupTime = bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate.time;
@@ -140,6 +166,7 @@
                 bookingStatus: bookedItinerary.bookingStatus,
                 name: bookedItinerary.name,
                 itinerary: bookedItinerary.inventoriesInfo[0].inventory,
+                paymentBreakup: bookedItinerary.inventoriesInfo[0].paymentBreakups[0],
                 searchCriteria: bookedItinerary.inventoriesInfo[0].searchCriteria,
                 passengers: bookedItinerary.passengers
             };
