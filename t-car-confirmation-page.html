@@ -1,6 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../t-notify/t-notify.html">
-<link rel="import" href="../t-faredetails/t-faredetails.html">
 <link rel="import" href="../t-car-itinerary-details/t-car-itinerary-details.html">
 <link rel="import" href="../t-section-header/t-section-header.html">
 <link rel="import" href="../t-header/t-header.html">
@@ -58,9 +57,7 @@
                 <span class="secondary-text">Confirmation # -&nbsp;</span>
                 <span class=""> [[bookedItinerary.confirmationNumber]]</span>
             </template>
-        </div>
-
-        
+        </div>        
 
         <t-sessionstorage
             id="sessionStore"
@@ -83,7 +80,7 @@
 
                 visible: {
                   type: Boolean,
-                  value: true,
+                  value: false,
                   notify: true,
                   observer: '_showConfirmation'
                 },
@@ -133,18 +130,17 @@
             },
 
             _showConfirmation: function () {
-                if (!this.visible) {
+                if (!this.visible || !this.bookedItinerary) {
                     return;
                 }
+
+                //remove this line once book API issue is resolved.
+                this.bookedItinerary = this._translateItinerary(this.bookedItinerary);
 
                 this.$.notify.active = false;
 
-                if (!this.bookedItinerary) {
-                    this.$.sessionStore.load();
-                    this.$.itineraryDetails.setDetails();
-                    this._setFareDetails();
-                    return;
-                }
+                this.$.itineraryDetails.setDetails(this.bookedItinerary.itinerary);
+                this._setFareDetails();
 
                 this._getConfirmationMessage();
             },
