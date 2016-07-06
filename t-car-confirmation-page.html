@@ -134,12 +134,14 @@
                     return;
                 }
 
-                //remove this line once book API issue is resolved.
-                this.bookedItinerary = this._translateItinerary(this.bookedItinerary);
+                //remove this if block line once book API issue is resolved.
+                if (!this.bookedItinerary.itinerary) {
+                    this.bookedItinerary = this._translateItinerary(this.bookedItinerary);                    
+                }
 
                 this.$.notify.active = false;
 
-                this.$.itineraryDetails.setDetails(this.bookedItinerary.itinerary);
+                this.$.itineraryDetails.setDetails(this.bookedItinerary.itinerary, this.bookedItinerary.searchCriteria);
                 this._setFareDetails();
 
                 this._getConfirmationMessage();
