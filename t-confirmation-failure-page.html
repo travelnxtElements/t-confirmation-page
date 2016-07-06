@@ -1,0 +1,94 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../t-notify/t-notify.html">
+<link rel="import" href="../t-text-container/travel-element-styles.html">
+<!--
+A comment describing this element
+
+Example:
+
+    <my-elem></my-elem>
+
+Example:
+
+    <my-elem>
+      <h2>Hello my-elem</h2>
+    </my-elem>
+
+@demo demo/index.html
+-->
+<dom-module id="t-confirmation-failure-page">
+	<template>
+	    <style include="travel-element-styles">
+	        .block{
+                display: block;
+                font-family: var(--header-font-family, --primary-font-family);
+                font-size: var(--font-14, 14px);
+	        }
+	    </style>
+
+        <content select="t-header"></content>
+
+        <t-notify id="notify"></t-notify>
+
+    	<t-notify 
+    		id="bookingFailureError" 
+    		active 
+    		message="{{_getErrorMessage()}}" 
+    		type="error">    			
+		</t-notify>
+    	<div class="section font-12 ">
+        	<a class="link-style block margin-bottom" href="{{homePageUrl}}">Home page</a>
+        	<a class="link-style block margin-bottom" href="{{resultsPageUrl}}">Results page</a> 
+        	<a class="link-style block margin-bottom" href="{{detailsPageUrl}}">Details page</a>
+    	</div>
+    </template>
+    <script>
+        (function () {
+            'use strict'
+
+            Polymer({
+
+                is: 't-confirmation-failure-page',
+
+                properties: {
+
+                    visible: {
+                        type: Boolean,
+                        value: false,
+                        notify: true,
+                        observer: '_onBookingFailure'
+                    },
+
+                    homePageUrl: {
+                        type: String
+                    },
+
+                    resultsPageUrl: {
+                        type: String
+                    },
+
+                    detailsPageUrl: {
+                        type: String
+                    },
+
+                    CustomerCareNumber: {
+                        type: String
+                    }
+                },
+
+                _onBookingFailure: function (visible) {
+                    if (!visible) {
+                        return;
+                    }
+                },
+
+                _getErrorMessage: function () {
+                    return "Oops, your booking didn't go through. Sorry, there was a problem. We were not able to confirm your booking. For any assistance, please contact " + this.CustomerCareNumber;
+                }
+            });
+
+
+
+        })();
+    </script>
+</dom-module>
