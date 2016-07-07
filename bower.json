@@ -6,7 +6,6 @@
     "polymer": "Polymer/polymer#^1.4.0",
     "t-notify": "atomelements/t-notify#^1.1.1",
     "t-car-itinerary-details": "travelnxtelements/t-car-itinerary-details",
-    "t-faredetails": "travelnxtelements/t-faredetails#^1.1.1",
     "t-section-header": "atomelements/t-section-header#^1.0.4",
     "t-sessionstorage": "travelnxtelements/t-sessionstorage#^1.0.1"
   },
@@ -14,6 +13,7 @@
     "t-shared-components": "atomelements/t-shared-components#^1.0.5",
     "webcomponentsjs": "~0.7.14",
     "iron-component-page": "PolymerElements/iron-component-page#~1.0.6",
+    "t-faredetails": "travelnxtelements/t-faredetails#^1.1.1",
     "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.2.1",
     "t-text-container": "travelnxtelements/t-text-container#^1.1.1",
     "t-header": "travelnxtElements/t-header#^1.0.0"
