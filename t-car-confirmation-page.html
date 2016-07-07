@@ -35,6 +35,16 @@
             search-criteria=[[bookedItinerary.searchCriteria]]>
         </t-car-itinerary-details>
 
+        <t-section-header class="margin-bottom" label="Guest Info"></t-section-header>
+
+        <div class="section-small font-14 layout horizontal">
+            <template is="dom-repeat" items="{{bookedItinerary.passengers}}">
+                <span class="name flex font-16">{{_capitalize(item.firstName, item.lastName)}}</span>
+                <span class="secondary-text">Confirmation # -&nbsp;</span>
+                <span class=""> [[bookedItinerary.confirmationNumber]]</span>
+            </template>
+        </div> 
+
         <t-faredetails 
           id="fareDetails"
           is-collapsible
@@ -47,17 +57,7 @@
                 <span class="flex"></span>
                 <span>[[bookedItinerary.paymentBreakup.amount.currency]] [[bookedItinerary.paymentBreakup.amount.amount]]</span>
             </div>
-        </template>
-
-        <t-section-header class="margin-bottom" label="Guest Info"></t-section-header>
-
-        <div class="section-small font-14 layout horizontal">
-            <template is="dom-repeat" items="{{bookedItinerary.passengers}}">
-                <span class="name flex font-16">{{_camelize(item.firstName, item.lastName)}}</span>
-                <span class="secondary-text">Confirmation # -&nbsp;</span>
-                <span class=""> [[bookedItinerary.confirmationNumber]]</span>
-            </template>
-        </div>        
+        </template>       
 
         <t-sessionstorage
             id="sessionStore"
@@ -134,11 +134,6 @@
                     return;
                 }
 
-                //remove this if block line once book API issue is resolved.
-                if (!this.bookedItinerary.itinerary) {
-                    this.bookedItinerary = this._translateItinerary(this.bookedItinerary);                    
-                }
-
                 this.$.notify.active = false;
 
                 this.$.itineraryDetails.setDetails(this.bookedItinerary.itinerary, this.bookedItinerary.searchCriteria);
@@ -150,7 +145,7 @@
             _getConfirmationMessage: function () {
 
                 this.$.notify.type = 'success'
-                this.$.notify.message = 'Confirmation page loaded successfully!';
+                this.$.notify.message = 'Your booking is complete. Your trip ID is ' + this.bookedItinerary.confirmationNumber + '. A confirmation email has been sent to ' + this.bookedItinerary.passengers[0].emailAddress;
                 this.$.notify.active = true;
                 this.fire('confirmation-success');
             },
@@ -173,7 +168,7 @@
                 }
             },
 
-            _camelize: function (str) {
+            _capitalize: function (str) {
                 if (!arguments.length) {
                     return;
                 }
@@ -182,25 +177,7 @@
                 return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
                 return letter.toUpperCase();
                 }).replace(/\s+/g, ' ');
-            },
-        _translateItinerary: function (bookedItinerary) {
-
-            bookedItinerary.inventoriesInfo[0].searchCriteria.pickupTime = bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate.time;
-            bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate = bookedItinerary.inventoriesInfo[0].searchCriteria.pickupDate.date;
-
-            bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffTime = bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffDate.time;
-            bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffDate = bookedItinerary.inventoriesInfo[0].searchCriteria.dropoffDate.date;
-
-            return {                            
-                confirmationNumber: bookedItinerary.confirmationNumber,
-                bookingStatus: bookedItinerary.bookingStatus,
-                name: bookedItinerary.name,
-                itinerary: bookedItinerary.inventoriesInfo[0].inventory,
-                paymentBreakup: bookedItinerary.inventoriesInfo[0].paymentBreakups[0],
-                searchCriteria: bookedItinerary.inventoriesInfo[0].searchCriteria,
-                passengers: bookedItinerary.passengers
-            };
-        }
+            }
         });
     </script>
 </dom-module>
