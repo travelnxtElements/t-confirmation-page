@@ -38,8 +38,8 @@
         <t-section-header class="margin-bottom" label="Guest Info"></t-section-header>
 
         <div class="section-small font-14 layout horizontal">
-            <template is="dom-repeat" items="{{bookedItinerary.passengers}}">
-                <span class="name flex font-16">{{_capitalize(item.firstName, item.lastName)}}</span>
+            <template is="dom-repeat" items="[[bookedItinerary.passengers]]">
+                <span class="name flex font-16">{{_capitalize(item.firstName.title, item.firstName, item.lastName)}}</span>
                 <span class="secondary-text">Confirmation # -&nbsp;</span>
                 <span class=""> [[bookedItinerary.confirmationNumber]]</span>
             </template>
@@ -62,122 +62,129 @@
         <t-sessionstorage
             id="sessionStore"
             key="Car_Booked_Itinerary"
-            api-url-format="{{apiUrlFormat}}"
+            api-url-format="[[apiUrlFormat]]"
             on-t-sessionstorage-load-success="_onSessionLoad">
         </t-sessionstorage>
 
     </template>
 
     <script>
-        Polymer({
-            is: 't-car-confirmation-page',
+        (function () {
+            
+            'use strict'
 
-            behaviors: [
-                TravelNxt.Behaviors.DateBehavior
-            ],
+            Polymer({
+                is: 't-car-confirmation-page',
 
-            properties: {
+                behaviors: [
+                    TravelNxt.Behaviors.DateBehavior
+                ],
 
-                visible: {
-                  type: Boolean,
-                  value: false,
-                  notify: true,
-                  observer: '_showConfirmation'
+                properties: {
+
+                    visible: {
+                      type: Boolean,
+                      value: false,
+                      notify: true,
+                      observer: '_showConfirmation'
+                    },
+
+                    /*
+                     * <p>This string is query string containing token value</p>
+                    */
+                    authToken: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /*
+                     * <p>This property holds the value of api base URL</p>
+                    */
+                    apiBaseUrl: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /*
+                     * <p>This property holds the value of web api URL format</p>
+                    */
+                    apiUrlFormat: {
+                        type: String,
+                        value: ''
+                    },
+
+                    /*
+                     * <p>This property holds the value of web api URL format</p>
+                    */
+                    bookedItinerary: {
+                        type: Object
+                    },
                 },
 
-                /*
-                 * <p>This string is query string containing token value</p>
-                */
-                authToken: {
-                    type: String,
-                    value: ''
+                _showConfirmation: function () {
+                    if (!this.visible || !this.bookedItinerary) {
+                        this.fire('go-to-search');
+                        return;
+                    }
+
+                    this.$.notify.active = false;
+
+                    this.$.itineraryDetails.setDetails(this.bookedItinerary.itinerary, this.bookedItinerary.searchCriteria);
+                    this._setFareDetails();
+
+                    this._getConfirmationMessage();
                 },
 
-                /*
-                 * <p>This property holds the value of api base URL</p>
-                */
-                apiBaseUrl: {
-                    type: String,
-                    value: ''
+                _onSessionLoad: function () {
+                    if (!this.$.sessionStore.value) {
+                        this.$.notify.message = 'Booked itinerary not found!';
+                        this.$.notify.active = true;
+                        this.fire('confirmation-error');
+                        return;
+                    }
+
+                    this.bookedItinerary = this._translateItinerary(this.$.sessionStore.value);
+                    this._getConfirmationMessage();
                 },
 
-                /*
-                 * <p>This property holds the value of web api URL format</p>
-                */
-                apiUrlFormat: {
-                    type: String,
-                    value: ''
-                },
+                _getConfirmationMessage: function () {
 
-                /*
-                 * <p>This property holds the value of web api URL format</p>
-                */
-                bookedItinerary: {
-                    type: Object
-                },
-            },
-
-            _onSessionLoad: function () {
-                if (!this.$.sessionStore.value) {
-                    this.$.notify.message = 'Booked itinerary not found!';
+                    this.$.notify.type = 'success'
+                    this.$.notify.message = 'Your booking is complete. Your trip ID is ' + this.bookedItinerary.confirmationNumber + '. A confirmation email has been sent to ' + this.bookedItinerary.passengers[0].emailAddress;
                     this.$.notify.active = true;
-                    this.fire('confirmation-error');
-                    return;
+                    this.fire('confirmation-success');
+                },
+
+                _setFareDetails: function () {
+                    if (!this.bookedItinerary || !this.bookedItinerary.itinerary || !this.bookedItinerary.searchCriteria) {
+                        return;
+                    }
+
+                    var formattedDate = this._getDateComponents(this.bookedItinerary.searchCriteria.pickupDate);
+                    this.pickupDate = formattedDate.date + ' ' + formattedDate.shortMonth + ' ' + this.bookedItinerary.searchCriteria.pickupTime;
+
+                    formattedDate = this._getDateComponents(this.bookedItinerary.searchCriteria.dropoffDate);
+                    this.dropoffDate = formattedDate.date + ' ' + formattedDate.shortMonth + ' ' + this.bookedItinerary.searchCriteria.dropoffTime;
+
+                    this.$.fareDetails.baseFareLabel = 'Avg. per day rate x ' + this._dateDiff(this.pickupDate, this.dropoffDate);
+
+                    if (this.bookedItinerary.itinerary.fare && this.bookedItinerary.itinerary.fare.components) {
+                        this.$.fareDetails.data = this.bookedItinerary.itinerary.fare.components;
+                    }
+                },
+
+                _capitalize: function (str) {
+                    if (!arguments.length) {
+                        return;
+                    }
+                    var str = Array.prototype.slice.call(arguments);
+                    str = str.join(' ');
+                    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+                    return letter.toUpperCase();
+                    }).replace(/\s+/g, ' ');
                 }
+            });
 
-                this.bookedItinerary = this._translateItinerary(this.$.sessionStore.value);
-                this._getConfirmationMessage();
-            },
-
-            _showConfirmation: function () {
-                if (!this.visible || !this.bookedItinerary) {
-                    return;
-                }
-
-                this.$.notify.active = false;
-
-                this.$.itineraryDetails.setDetails(this.bookedItinerary.itinerary, this.bookedItinerary.searchCriteria);
-                this._setFareDetails();
-
-                this._getConfirmationMessage();
-            },
-
-            _getConfirmationMessage: function () {
-
-                this.$.notify.type = 'success'
-                this.$.notify.message = 'Your booking is complete. Your trip ID is ' + this.bookedItinerary.confirmationNumber + '. A confirmation email has been sent to ' + this.bookedItinerary.passengers[0].emailAddress;
-                this.$.notify.active = true;
-                this.fire('confirmation-success');
-            },
-
-            _setFareDetails: function () {
-                if (!this.bookedItinerary || !this.bookedItinerary.itinerary || !this.bookedItinerary.searchCriteria) {
-                    return;
-                }
-
-                var formattedDate = this._getDateComponents(this.bookedItinerary.searchCriteria.pickupDate);
-                this.pickupDate = formattedDate.date + ' ' + formattedDate.shortMonth + ' ' + this.bookedItinerary.searchCriteria.pickupTime;
-
-                formattedDate = this._getDateComponents(this.bookedItinerary.searchCriteria.dropoffDate);
-                this.dropoffDate = formattedDate.date + ' ' + formattedDate.shortMonth + ' ' + this.bookedItinerary.searchCriteria.dropoffTime;
-
-                this.$.fareDetails.baseFareLabel = 'Avg. per day rate x ' + this._dateDiff(this.pickupDate, this.dropoffDate);
-
-                if (this.bookedItinerary.itinerary.fare && this.bookedItinerary.itinerary.fare.components) {
-                    this.$.fareDetails.data = this.bookedItinerary.itinerary.fare.components;
-                }
-            },
-
-            _capitalize: function (str) {
-                if (!arguments.length) {
-                    return;
-                }
-                var str = Array.prototype.slice.call(arguments);
-                str = str.join(' ');
-                return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
-                return letter.toUpperCase();
-                }).replace(/\s+/g, ' ');
-            }
-        });
+        })();
     </script>
 </dom-module>
