@@ -39,9 +39,9 @@
 
         <div class="section-small font-14 layout horizontal">
             <template is="dom-repeat" items="[[bookedItinerary.passengers]]">
-                <span class="name flex font-16">{{_capitalize(item.firstName.title, item.firstName, item.lastName)}}</span>
+                <span class="name flex font-16">[[_capitalize(item.title, item.firstName, item.lastName)]]</span>
                 <span class="secondary-text">Confirmation # -&nbsp;</span>
-                <span class=""> [[bookedItinerary.confirmationNumber]]</span>
+                <span class=""> [[_getConfirmationNumber(bookedItinerary.passengerSegment)]]</span>
             </template>
         </div> 
 
@@ -182,6 +182,20 @@
                     return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
                     return letter.toUpperCase();
                     }).replace(/\s+/g, ' ');
+                },
+
+                _getConfirmationNumber: function (passengerSegment) {
+                    if (!passengerSegment) {
+                        return this.bookedItinerary.confirmationNumber;
+                    }
+
+                    if (passengerSegment.vendorConfirmationNumber) {
+                        return passengerSegment.vendorConfirmationNumber;
+                    } else if(passengerSegment.confirmationNumber) {
+                        return passengerSegment.confirmationNumber;
+                    } else {
+                        return this.bookedItinerary.confirmationNumber;
+                    }
                 }
             });
 
