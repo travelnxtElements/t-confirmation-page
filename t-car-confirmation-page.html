@@ -24,7 +24,7 @@
 
         <content select="t-header"></content>
 
-        <t-notify id="notify"></t-notify>
+        <t-notify id="notify" success-icon="[[successIcon]]" type="success"></t-notify>
 
         <t-section-header class="margin-bottom" label="Trip Summary"></t-section-header>
         
@@ -150,7 +150,6 @@
 
                 _getConfirmationMessage: function () {
 
-                    this.$.notify.type = 'success'
                     this.$.notify.message = 'Your booking is complete. Your trip ID is ' + this.bookedItinerary.confirmationNumber + '. A confirmation email has been sent to ' + this.bookedItinerary.passengers[0].emailAddress;
                     this.$.notify.active = true;
                     this.fire('confirmation-success');
