@@ -26,6 +26,13 @@
 
         <t-notify id="notify" success-icon="[[successIcon]]" type="success"></t-notify>
 
+        <t-policy id="policy" 
+            label="Policies"
+            external-link
+            policies="[[bookedItinerary.itinerary.generalPolicies]]"
+            is-data-provided-by-view>
+        </t-policy>
+
         <t-section-header class="margin-bottom" label="Trip Summary"></t-section-header>
         
         <t-car-itinerary-details
@@ -120,6 +127,14 @@
                     bookedItinerary: {
                         type: Object
                     },
+                },
+
+                listeners: {
+                    'policy-click': '_showPolicies'
+                },
+
+                _showPolicies: function () {
+                    this.$.policy.initiatePolicyCall();
                 },
 
                 _showConfirmation: function () {
