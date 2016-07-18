@@ -145,6 +145,9 @@
 
                     this.$.notify.active = false;
 
+                    //initiate policy component
+                    this.$.policy.initiatePolicyView();
+
                     this.$.itineraryDetails.setDetails(this.bookedItinerary.itinerary, this.bookedItinerary.searchCriteria);
                     this._setFareDetails();
 
