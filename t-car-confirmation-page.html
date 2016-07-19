@@ -1,5 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../juicy-html/juicy-html.html">
 <link rel="import" href="../t-notify/t-notify.html">
+<link rel="import" href="../t-policy/t-policy.html">
 <link rel="import" href="../t-car-itinerary-details/t-car-itinerary-details.html">
 <link rel="import" href="../t-section-header/t-section-header.html">
 <link rel="import" href="../t-header/t-header.html">
@@ -7,6 +9,48 @@
 <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html"/>
 <link rel="import" href="../t-sessionstorage/t-sessionstorage.html">
 <link rel="import" href="../t-shared-lib/t-date-behavior.html">
+
+<!--
+    <h3>Details:</h3>
+
+        `t-car-confirmation-page` is a car confirmation page component which displays booked itinerary information.
+
+        It uses following child components in it -
+            1. `t-notify`
+            2. `t-header`
+            3. `t-policy`
+            4. `t-car-itinerary-details`
+            5. `t-faredetails`
+            6. `t-sessionstorage`
+
+    <h3>Events:</h3>
+
+        following events are fired by this component
+
+            1. 'confirmation-error' - fired when error is occured while fetching booked itinerary from session, session is currently not used in this page.
+            2. 'confirmation-success' - fired when confirmation page is loaded succesfully.
+            3. `go-to-search` - fired when page is loaded without required page data.
+
+    <h3>Example:</h3>
+
+        <t-car-confirmation-page
+            id="confirmation"
+            success-icon="[[successIcon]]"
+            api-base-url="[[apiBaseUrl]]"
+            auth-token="[[authToken]]"
+            booked-itinerary="[[bookedItinerary]]"
+            api-url-format="[[apiUrlFormat]]">
+            <t-header
+                icon="home"
+                on-left-button-click="_goToSearch"
+                label="Confirmation"
+                normal-heading>
+            </t-header>
+        </t-car-confirmation-page>
+
+    @demo demo/index.html
+    @demo demo/index.html
+-->
 
 <dom-module id="t-car-confirmation-page">
     <template>
@@ -73,7 +117,6 @@
             api-url-format="[[apiUrlFormat]]"
             on-t-sessionstorage-load-success="_onSessionLoad">
         </t-sessionstorage>
-
     </template>
 
     <script>
@@ -90,6 +133,10 @@
 
                 properties: {
 
+                    /*
+                     * <p>This is a notification flag to indicate current page state</p>
+                     * <p>Set it to true if page needs to be displayed on browser</p>
+                    */
                     visible: {
                       type: Boolean,
                       value: false,
@@ -122,7 +169,7 @@
                     },
 
                     /*
-                     * <p>This property holds the value of web api URL format</p>
+                     * <p>This property holds the value of booked itinerary</p>
                     */
                     bookedItinerary: {
                         type: Object
@@ -133,10 +180,18 @@
                     'policy-click': '_showPolicies'
                 },
 
+                /*
+                 * <p>this method gets called when policy link in `t-car-itinerary-details` component is clicked.</p>
+                 * <p>It is triggered by the `policy-click` listener.</p>
+                */
                 _showPolicies: function () {
                     this.$.policy.initiatePolicyCall();
                 },
 
+                /*
+                 * <p>this method gets called when page becomes visible</p>
+                 * <p>`go-to-search` event is fired if `bookedItinerary` property is not set.</p>
+                */
                 _showConfirmation: function () {
                     if (!this.visible || !this.bookedItinerary) {
                         this.fire('go-to-search');
@@ -154,6 +209,9 @@
                     this._getConfirmationMessage();
                 },
 
+                /*
+                 * <p>This is the event handler for `t-sessionstorage` load component</p>
+                */
                 _onSessionLoad: function () {
                     if (!this.$.sessionStore.value) {
                         this.$.notify.message = 'Booked itinerary not found!';
@@ -166,6 +224,9 @@
                     this._getConfirmationMessage();
                 },
 
+                /*
+                 * <p>This method constructs success message and triggers `confirmation-success` event</p>
+                */
                 _getConfirmationMessage: function () {
 
                     this.$.notify.message = 'Your booking is complete. Your trip ID is ' + this.bookedItinerary.confirmationNumber + '. A confirmation email has been sent to ' + this.bookedItinerary.passengers[0].emailAddress;
@@ -173,6 +234,9 @@
                     this.fire('confirmation-success');
                 },
 
+                /*
+                 * <p>This method translates booked itinerary to set properties of internal view components</p>
+                */
                 _setFareDetails: function () {
                     if (!this.bookedItinerary || !this.bookedItinerary.itinerary || !this.bookedItinerary.searchCriteria) {
                         return;
@@ -191,6 +255,9 @@
                     }
                 },
 
+                /*
+                 * <p>This method capitalizes the passenger names</p>
+                */
                 _capitalize: function (str) {
                     if (!arguments.length) {
                         return;
@@ -202,6 +269,10 @@
                     }).replace(/\s+/g, ' ');
                 },
 
+                /*
+                 * <p>This method extracts confirmation number from booked itinerary</p>
+                 * <p>`confirmationNumber` is displayed if `vendorConfirmationNumber` is not available</p>
+                */
                 _getConfirmationNumber: function (passengerSegment) {
                     if (!passengerSegment) {
                         return this.bookedItinerary.confirmationNumber;

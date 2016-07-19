@@ -1,21 +1,35 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../t-notify/t-notify.html">
 <link rel="import" href="../t-text-container/travel-element-styles.html">
+
 <!--
-A comment describing this element
+    <h3>Details:</h3>
 
-Example:
+        `t-confirmation-failure-page` is a car confirmation page component which displays booked itinerary information.
 
-    <my-elem></my-elem>
+        It uses following child components in it -
+            1. `t-notify`
+            2. `t-header`
 
-Example:
+    <h3>Example:</h3>
 
-    <my-elem>
-      <h2>Hello my-elem</h2>
-    </my-elem>
+        <t-confirmation-failure-page
+                id="failure"
+                name="failure"
+                home-page-url="[[siteUrl]]car"
+                results-page-url="[[siteUrl]]car/categories"
+                details-page-url="[[siteUrl]]car/details">
+            <t-header
+                icon="home"
+                url="[[siteUrl]]car"
+                label="Confirmation"
+                normal-heading>
+            </t-header>
+        </t-confirmation-failure-page>
 
-@demo demo/index.html
+    @demo demo/index.html
 -->
+
 <dom-module id="t-confirmation-failure-page">
 	<template>
 	    <style include="travel-element-styles">
@@ -52,6 +66,10 @@ Example:
 
                 properties: {
 
+                    /*
+                     * <p>This is a notification flag to indicate current page state</p>
+                     * <p>Set it to true if page needs to be displayed on browser</p>
+                    */
                     visible: {
                         type: Boolean,
                         value: false,
@@ -59,18 +77,30 @@ Example:
                         observer: '_onBookingFailure'
                     },
 
+                    /*
+                     * <p>Home page url to redirect to home page</p>
+                    */
                     homePageUrl: {
                         type: String
                     },
 
+                    /*
+                     * <p>Result page url to redirect to result page</p>
+                    */
                     resultsPageUrl: {
                         type: String
                     },
 
+                    /*
+                     * <p>Details page url to redirect to details page</p>
+                    */
                     detailsPageUrl: {
                         type: String
                     },
 
+                    /*
+                     * <p>Customer care number to be displayed i the error message</p>
+                    */
                     CustomerCareNumber: {
                         type: String
                     }
