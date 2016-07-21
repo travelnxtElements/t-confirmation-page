@@ -1,44 +1,93 @@
 <!doctype html>
 <html>
-    <head>
-        <title>t-car-confirmation-page demo</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
-        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 
-        <link rel="import" href="../t-car-confirmation-page.html">
-        <link rel="import" href="../../t-shared-components/theme.html">
-    </head>
+<head>
+    <title>t-car-confirmation-page demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
+    <link rel="import" href="../../t-shared-components/theme.html">
+    <link rel="import" href="../../t-radio-group/t-radio-group.html">
+    <link rel="import" href="../t-confirmation-failure-page.html">
+    <link rel="import" href="../t-car-confirmation-page.html">
+    <link rel="import" href="../../t-text-container/travel-element-styles.html">
+    <link rel="import" href="../../iron-flex-layout/iron-flex-layout-classes.html"/>
+</head>
 
-    <body>
-        <template is="dom-bind" id="domBindTemplate">
-            <t-car-confirmation-page
-                id="confirmation"
-                visible=[[visible]]
-                success-icon="[[successIcon]]"
-                api-base-url="http://qa-mystiquecode.tavisca.com/"
-                auth-token="[[authToken]]"
-                api-url-format="/api/Session/SESSIONKEY"
-                booked-itinerary="[[bookedItinerary]]">
-                <t-header
-                    icon="home"
-                    on-left-button-click="_goToSearch"
-                    label="Confirmation"
-                    normal-heading>
-                </t-header>
-            </t-car-confirmation-page>
-        </template>
-    </body>
+<body>
+    <template is="dom-bind" id="templatizer">
+
+        <style include="iron-flex"></style>
+        <style include="travel-element-styles">
+            t-radio-group{
+                margin-bottom: 20px;
+            };
+        </style>
+
+        <div class="form flex">
+            <div class="row">
+                <t-radio-group
+                    id="itineraryType" 
+                    name="itineraryType" 
+                    data='["Success Page","Faliure Page"]' 
+                    pill-button 
+                    selected-item="{{itineraryType}}"
+                    on-t-radio-group-changed="changePage">
+                </t-radio-group>
+            </div>
+        </div>
+
+        <t-car-confirmation-page
+            id="confirmation"
+            visible="[[visible]]"
+            success-icon="[[successIcon]]"
+            api-base-url="http://qa-mystiquecode.tavisca.com/"
+            auth-token="[[authToken]]"
+            api-url-format="/api/Session/SESSIONKEY"
+            booked-itinerary="[[bookedItinerary]]">
+            <t-header
+                icon="home"
+                on-left-button-click="_goToSearch"
+                label="Confirmation"
+                normal-heading>
+            </t-header>
+        </t-car-confirmation-page>  
+
+        <t-confirmation-failure-page
+            id="failure"
+            name="failure"
+            visible="[[visible]]"
+            home-page-url="[[siteUrl]]car"
+            results-page-url="[[siteUrl]]car/categories"
+            details-page-url="[[siteUrl]]car/details"
+            customer-care-number="+91-9730266287">
+            <t-header
+                icon="home"
+                url="[[siteUrl]]car"
+                label="Confirmation"
+                normal-heading>
+            </t-header>
+        </t-confirmation-failure-page>      
+
+    </template>
+</body>
 
     <script type="text/javascript">
 
         (function () {
+            var templatizer = document.getElementById('templatizer');
 
-            window.addEventListener('WebComponentsReady', function(e) {
-                var template = document.getElementById('domBindTemplate');
-                template.bookedItinerary = bookedItinerary;
-                template.visible = true;
-            });
+            templatizer.changePage = function () {
+                if (templatizer.itineraryType === "0" || templatizer.itineraryType === 'Success Page') {
+                    templatizer.$.confirmation.hidden = false;
+                    templatizer.$.failure.hidden = true;
+                    templatizer.bookedItinerary = bookedItinerary;
+                    templatizer.$.confirmation.visible = true;
+                } else{
+                    templatizer.$.failure.visible = true;
+                    templatizer.$.confirmation.hidden = true;
+                    templatizer.$.failure.hidden = false;
+                }
+            };
 
             var bookedItinerary = {
                 "confirmationNumber": "25095",

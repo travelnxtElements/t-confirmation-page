@@ -47,7 +47,7 @@
     	<t-notify 
     		id="bookingFailureError" 
     		active 
-    		message="{{_getErrorMessage()}}" 
+    		message="[[errorMessage]]" 
     		type="error">    			
 		</t-notify>
     	<div class="section font-12 ">
@@ -101,24 +101,51 @@
                     /*
                      * <p>Customer care number to be displayed i the error message</p>
                     */
-                    CustomerCareNumber: {
+                    customerCareNumber: {
                         type: String
+                    },
+
+                    /*
+                     * <p>custom error message</p>
+                    */
+                    errorMessage: {
+                        type: String,
+                        value : ''
                     }
                 },
 
+                
+                /*
+                 * <p>this method gets called when page becomes visible</p>
+                 * <p>`go-to-search` event is fired if `visible` property is false.</p>
+                */
                 _onBookingFailure: function (visible) {
                     if (!visible) {
+                        this.fire('go-to-search');
                         return;
                     }
+                    this._getErrorMessage();
                 },
 
+                /*
+                 * <p>this method return the error message</p>
+                 * <p>Returns the error message only if page is visible</p>
+                */
                 _getErrorMessage: function () {
-                    return "Oops, your booking didn't go through. Sorry, there was a problem. We were not able to confirm your booking. For any assistance, please contact " + this.CustomerCareNumber;
+                    if (!this.visible) {
+                        return;
+                    }
+
+                    if (!this.errorMessage) {
+                        this.errorMessage = "Oops, your booking didn't go through. Sorry, there was a problem. We were not able to confirm your booking.";
+
+                        if (this.customerCareNumber) {
+                            this.errorMessage += " For any assistance, please contact " + this.customerCareNumber;
+                        }
+                    }                     
                 }
             });
-
-
-
+                        
         })();
     </script>
 </dom-module>
