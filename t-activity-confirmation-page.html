@@ -2,7 +2,7 @@
 <link rel="import" href="../juicy-html/juicy-html.html">
 <link rel="import" href="../t-notify/t-notify.html">
 <link rel="import" href="../t-policy/t-policy.html">
-<link rel="import" href="../t-car-itinerary-details/t-car-itinerary-details.html">
+<link rel="import" href="../t-activity-itinerary-details/t-activity-itinerary-details.html">
 <link rel="import" href="../t-section-header/t-section-header.html">
 <link rel="import" href="../t-header/t-header.html">
 <link rel="import" href="../t-faredetails/t-faredetails.html">
@@ -16,13 +16,13 @@
 <!--
     <h3>Details:</h3>
 
-        `t-car-confirmation-page` is a car confirmation page component which displays booked itinerary information.
+        `t-activity-confirmation-page` is a activity confirmation page component which displays booked itinerary information.
 
         It uses following child components in it -
             1. `t-notify`
             2. `t-header`
             3. `t-policy`
-            4. `t-car-itinerary-details`
+            4. `t-activity-itinerary-details`
             5. `t-faredetails`
             6. `t-sessionstorage`
 
@@ -36,7 +36,7 @@
 
     <h3>Example:</h3>
 
-        <t-car-confirmation-page
+        <t-activity-confirmation-page
             id="confirmation"
             success-icon="[[successIcon]]"
             api-base-url="[[apiBaseUrl]]"
@@ -49,12 +49,12 @@
                 label="Confirmation"
                 normal-heading>
             </t-header>
-        </t-car-confirmation-page>
+        </t-activity-confirmation-page>
 
     @demo demo/index.html
 -->
 
-<dom-module id="t-car-confirmation-page">
+<dom-module id="t-activity-confirmation-page">
     <template>
         <style include="t-car-result-item"></style>
         <style include="iron-flex"></style>
@@ -82,12 +82,12 @@
 
         <t-section-header class="margin-bottom" label="Trip Summary"></t-section-header>
         
-        <t-car-itinerary-details
+        <t-activity-itinerary-details
             id="itineraryDetails"
             is-collapsible
             itinerary="[[bookedItinerary.itinerary]]"
             search-criteria=[[bookedItinerary.searchCriteria]]>
-        </t-car-itinerary-details>
+        </t-activity-itinerary-details>
 
         <t-section-header class="margin-bottom" label="Guest Info"></t-section-header>
 
@@ -103,7 +103,7 @@
           id="fareDetails"
           label="Payment Details"
           is-collapsible
-          itinerary-fare-label="Car Rental">
+          itinerary-fare-label="Activity Rental">
         </t-faredetails>
 
         <template is="dom-if" if="[[bookedItinerary.itinerary.isPostPaid]]">
@@ -116,7 +116,7 @@
 
         <t-sessionstorage
             id="sessionStore"
-            key="Car_Booked_Itinerary"
+            key="Activity_Booked_Itinerary"
             api-url-format="[[apiUrlFormat]]"
             on-t-sessionstorage-load-success="_onSessionLoad">
         </t-sessionstorage>
@@ -128,7 +128,7 @@
             'use strict'
 
             Polymer({
-                is: 't-car-confirmation-page',
+                is: 't-activity-confirmation-page',
 
                 behaviors: [
                     TravelNxt.Behaviors.ConfirmationBehavior,
