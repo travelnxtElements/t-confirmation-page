@@ -11,6 +11,8 @@
 <link rel="import" href="../t-sessionstorage/t-sessionstorage.html">
 <link rel="import" href="../t-shared-lib/t-confirmation-behavior.html">
 <link rel="import" href="../t-shared-lib/t-date-behavior.html">
+<link rel="import" href="../t-behavior/t-page-behavior.html">
+<link rel="import" href="../t-behavior/t-activity-page-behavior.html">
 
 <!--
     <h3>Details:</h3>
@@ -140,18 +142,12 @@
 
                 behaviors: [
                     TravelNxt.Behaviors.ConfirmationBehavior,
-                    TravelNxt.Behaviors.DateBehavior
+                    TravelNxt.Behaviors.DateBehavior,
+                    TravelNxt.Behaviors.PageBehavior,
+                    TravelNxt.Behaviors.ActivityPageBehavior
                 ],
 
-                properties: {
-
-                    /*
-                     * <p>This property holds the value of passenger count selected against the selected option</p>
-                     */
-                    passengers: {
-                        type: Array,
-                        notify: true
-                    }                    
+                properties: {                   
                 },
 
                 /*
@@ -194,11 +190,11 @@
                             return item.type.toLowerCase() === 'basefare';
                         });
 
-                        if (!baseFare || !this.passengers || !this.passengers.length) {
+                        if (!baseFare || !this.paxCountMap || !this.paxCountMap.length) {
                             continue;
                         }
 
-                        var passenger = this.passengers.find(function (item) {
+                        var passenger = this.paxCountMap.find(function (item) {
                             return item.type.toLowerCase() === paxInfo[i].passengerType.toLowerCase();
                         });
 
