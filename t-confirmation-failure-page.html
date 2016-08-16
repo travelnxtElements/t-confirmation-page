@@ -109,12 +109,15 @@
                     }
                 },
 
+                observers:[
+                    '__pageLoad(visible)'
+                ],
                 
                 /*
                  * <p>this method gets called when page becomes visible</p>
                  * <p>`go-to-search` event is fired if `visible` property is false.</p>
                 */
-                _onBookingFailure: function (visible) {
+                __pageLoad: function (visible) {
                     if (!visible) {
                         this.fire('go-to-search');
                         return;
