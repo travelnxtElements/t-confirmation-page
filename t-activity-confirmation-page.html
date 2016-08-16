@@ -68,6 +68,10 @@
             .payable {
                 font-size: var(--font-18, 18px);
             }
+
+            .item{
+                padding: 10px 0;
+            }
         </style>
 
         <content select="t-header"></content>
@@ -154,7 +158,7 @@
                     //sets passenger count mapping
                     this._setPaxDetails();
 
-                    if (!this.itinerary || !this.searchCriteria) {
+                    if (!this.itinerary) {
                         return;
                     }
 
