@@ -122,14 +122,7 @@
                 <span class="flex"></span>
                 <span>[[bookedItinerary.paymentBreakup.amount.currency]] [[bookedItinerary.paymentBreakup.amount.amount]]</span>
             </div>
-        </template>       
-
-        <t-sessionstorage
-            id="sessionStore"
-            key="Activity_Booked_Itinerary"
-            api-url-format="[[apiUrlFormat]]"
-            on-t-sessionstorage-load-success="_onSessionLoad">
-        </t-sessionstorage>
+        </template>
     </template>
 
     <script>
@@ -155,6 +148,12 @@
                 * <p>This method overrides behavior implementation</p>
                 */
                 _setFareDetails: function () {
+
+                    this.itinerary = this.bookedItinerary.itinerary;
+
+                    //sets passenger count mapping
+                    this._setPaxDetails();
+
                     if (!this.itinerary || !this.searchCriteria) {
                         return;
                     }
@@ -198,8 +197,8 @@
                             return item.type.toLowerCase() === paxInfo[i].passengerType.toLowerCase();
                         });
 
-                        if (passenger && passenger.quantity) {
-                            passenger = parseInt(passenger.quantity);
+                        if (passenger && passenger.count) {
+                            passenger = parseInt(passenger.count);
                         }
 
                         if (passenger) {
