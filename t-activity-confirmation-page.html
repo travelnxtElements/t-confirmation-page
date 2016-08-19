@@ -97,11 +97,13 @@
 
         <t-section-header class="margin-bottom" label="Guest Info"></t-section-header>
 
-        <div class="section-small font-14 layout horizontal">
+        <div class="section-small font-14">
             <template is="dom-repeat" items="[[bookedItinerary.passengers]]">
-                <span class="name flex font-16">[[_capitalize(item.title, item.firstName, item.lastName)]]</span>
-                <span class="secondary-text">Confirmation # -&nbsp;</span>
-                <span class=""> [[_getConfirmationNumber(bookedItinerary.passengerSegment)]]</span>
+                <div class="margin-bottom">
+                    <span class="name flex font-16">[[_capitalize(item.title, item.firstName, item.lastName)]]</span>
+                    <span class="secondary-text">Confirmation # -&nbsp;</span>
+                    <span class=""> [[_getConfirmationNumber(bookedItinerary.passengerSegment)]]</span>
+                </div>
             </template>
         </div> 
 
