@@ -169,6 +169,23 @@
                 },
 
                 /*
+                 * <p>this method gets called when page becomes visible</p>
+                 * <p>`go-to-search` event is fired if `bookedItinerary` property is not set.</p>
+                */
+                _pageLoad: function(visible) {
+                    if (!visible || !this.bookedItinerary) {
+                        this.fire('go-to-search');
+                        return;
+                    }
+
+                    this.$.notify.active = false;
+
+                    this._setFareDetails();
+
+                    this._getConfirmationMessage();
+                },
+
+                /*
                  * <p>Builds fare components to include passenger-wise prices as per passenger counts provided while pricing</p>
                 */
                 _buildFareComponents: function () {
