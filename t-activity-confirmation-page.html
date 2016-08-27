@@ -13,6 +13,7 @@
 <link rel="import" href="../t-shared-lib/t-date-behavior.html">
 <link rel="import" href="../t-behavior/t-page-behavior.html">
 <link rel="import" href="../t-behavior/t-activity-page-behavior.html">
+<link rel="import" href="../t-behavior/t-session-behavior.html"/>
 
 <!--
     <h3>Details:</h3>
@@ -100,7 +101,7 @@
                     <span class=""> [[_getConfirmationNumber(bookedItinerary.passengerSegment)]]</span>
                 </div>
             </template>
-        </div> 
+        </div>
 
         <t-faredetails 
             id="fareDetails"
@@ -126,6 +127,13 @@
                 <span>[[bookedItinerary.paymentBreakup.amount.currency]] [[bookedItinerary.paymentBreakup.amount.amount]]</span>
             </div>
         </template>
+
+        <t-sessionstorage
+            id="sessionStore"
+            api-url-format="[[apiUrlFormat]]"
+            on-t-sessionstorage-load-success="_onSessionGet"
+            on-t-sessionstorage-save-success="_onSessionSave">
+        </t-sessionstorage>
     </template>
 
     <script>
@@ -140,10 +148,51 @@
                     TravelNxt.Behaviors.ConfirmationBehavior,
                     TravelNxt.Behaviors.DateBehavior,
                     TravelNxt.Behaviors.PageBehavior,
-                    TravelNxt.Behaviors.ActivityPageBehavior
+                    TravelNxt.Behaviors.ActivityPageBehavior,
+                    TravelNxt.Behaviors.SessionBehavior
                 ],
 
                 properties: {                   
+                },
+
+                listeners: {
+                    'session-get-complete': '_updatePage'
+                },
+
+                /*
+                 * <p>this method gets called when page becomes visible</p>
+                 * <p>`go-to-search` event is fired if `bookedItinerary` property is not set.</p>
+                */
+                __pageLoad: function(visible) {
+                    if (!visible) {
+                        return;
+                    }
+                    this.$.notify.active = false;
+
+                    this._syncSession();
+                },
+
+                _updatePage: function  () {
+
+                    if (!this.bookedItinerary) {
+                        this.fire('go-to-search');
+                    }
+
+                    //sets passenger count mapping
+                    this._setPaxDetails();
+                    this._setFareDetails();
+                    this._getConfirmationMessage();
+                },
+
+                _syncSession: function () {
+                    this._data = [{
+                        key: 'Activitie_Booked_Itinerary',
+                        propertyName: 'bookedResponse'
+                    },{
+                        key: 'Activitie_Option',
+                        propertyName: 'selectedOption'
+                    }];
+                    this.getSession();
                 },
 
                 /*
@@ -151,18 +200,12 @@
                 * <p>This method overrides behavior implementation</p>
                 */
                 _setFareDetails: function () {
-
-                    this.itinerary = this.bookedItinerary.itinerary;
-
-                    //sets passenger count mapping
-                    this._setPaxDetails();
-
-                    if (!this.itinerary) {
+                    if (!this.bookedItinerary.itinerary) {
                         return;
                     }
 
-                    if (this.itinerary.fare && this.itinerary.fare.components) {
-                        this.$.fareDetails.data = this.itinerary.fare.components.filter(function (item) {
+                    if (this.bookedItinerary.itinerary.fare && this.bookedItinerary.itinerary.fare.components) {
+                        this.$.fareDetails.data = this.bookedItinerary.itinerary.fare.components.filter(function (item) {
                             return item.type.toLowerCase() !== 'basefare';
                         });
 
@@ -171,30 +214,14 @@
                 },
 
                 /*
-                 * <p>this method gets called when page becomes visible</p>
-                 * <p>`go-to-search` event is fired if `bookedItinerary` property is not set.</p>
-                */
-                _pageLoad: function(visible) {
-                    if (!visible || !this.bookedItinerary) {
-                        return;
-                    }
-
-                    this.$.notify.active = false;
-
-                    this._setFareDetails();
-
-                    this._getConfirmationMessage();
-                },
-
-                /*
                  * <p>Builds fare components to include passenger-wise prices as per passenger counts provided while pricing</p>
                 */
                 _buildFareComponents: function () {
-                    if (!this.itinerary.options || !this.itinerary.options.length) {
+                    if (!this.bookedItinerary.itinerary.options || !this.bookedItinerary.itinerary.options.length) {
                         return;
                     }
 
-                    var paxInfo = this.itinerary.options[0].passengerTypesInfo;
+                    var paxInfo = this.bookedItinerary.itinerary.options[0].passengerTypesInfo;
 
                     var passengerFares = [];
 
