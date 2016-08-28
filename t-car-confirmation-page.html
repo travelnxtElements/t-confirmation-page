@@ -12,6 +12,7 @@
 <link rel="import" href="../t-shared-lib/t-confirmation-behavior.html">
 <link rel="import" href="../t-shared-lib/t-date-behavior.html">
 <link rel="import" href="../t-behavior/t-page-behavior.html">
+<link rel="import" href="../t-behavior/t-session-behavior.html"/>
 
 <!--
     <h3>Details:</h3>
@@ -112,13 +113,13 @@
                 <span class="flex"></span>
                 <span>[[bookedItinerary.paymentBreakup.amount.currency]] [[bookedItinerary.paymentBreakup.amount.amount]]</span>
             </div>
-        </template>       
+        </template>
 
         <t-sessionstorage
             id="sessionStore"
-            key="Car_Booked_Itinerary"
             api-url-format="[[apiUrlFormat]]"
-            on-t-sessionstorage-load-success="_onSessionLoad">
+            on-t-sessionstorage-load-success="_onSessionGet"
+            on-t-sessionstorage-save-success="_onSessionSave">
         </t-sessionstorage>
     </template>
 
@@ -133,7 +134,8 @@
                 behaviors: [
                     TravelNxt.Behaviors.ConfirmationBehavior,
                     TravelNxt.Behaviors.DateBehavior,
-                    TravelNxt.Behaviors.PageBehavior
+                    TravelNxt.Behaviors.PageBehavior,
+                    TravelNxt.Behaviors.SessionBehavior
                 ]
             });
 
