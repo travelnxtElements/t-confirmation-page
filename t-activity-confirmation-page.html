@@ -248,9 +248,6 @@
 
                         if (passenger && passenger.count) {
                             passenger = parseInt(passenger.count);
-                        }
-
-                        if (passenger) {
                             passengerFares.push({
                                 label: paxInfo[i].passengerType + ' x ' + passenger,
                                 fare: (baseFare.money.amount * passenger).toFixed(2),
