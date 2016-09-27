@@ -86,6 +86,9 @@
             is-collapsible
             itinerary="[[bookedItinerary.itinerary]]"
             selected-option="[[selectedOption]]"
+            show-policy-error="[[!bookedItinerary.itinerary.generalPolicies
+            || !bookedItinerary.itinerary.generalPolicies.length]]"
+            policies="[[bookedItinerary.itinerary.generalPolicies]]"
             itinerary="[[bookedItinerary.itinerary]]"
             header-back-icon="[[headerBackIcon]]"
             search-criteria=[[bookedItinerary.searchCriteria]]>

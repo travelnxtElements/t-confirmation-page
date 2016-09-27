@@ -78,6 +78,8 @@
             label="Policies"
             external-link
             header-icon="[[headerBackIcon]]"
+            policy-failed="[[!bookedItinerary.itinerary.generalPolicies
+            || !bookedItinerary.itinerary.generalPolicies.length]]"
             policies="[[bookedItinerary.itinerary.generalPolicies]]"
             is-data-provided-by-view>
         </t-policy>
