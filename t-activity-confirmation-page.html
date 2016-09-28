@@ -98,10 +98,9 @@
 
         <div class="section-small font-14">
             <template is="dom-repeat" items="[[bookedItinerary.passengers]]">
-                <div class="margin-bottom">
-                    <span class="name flex font-16">[[_capitalize(item.title, item.firstName, item.lastName)]]</span>
-                    <span class="secondary-text">Confirmation # -&nbsp;</span>
-                    <span class=""> [[confirmationNumber]]</span>
+                <div class="layout horizontal margin-bottom">
+                    <span class="name flex font-16 font-semi">[[_capitalize(item.title, item.firstName, item.lastName)]]</span>
+                    <span class="flex secondary-text">Confirmation # -&nbsp;<span class="primary-text font-semi">[[confirmationNumber]]</span></span>
                 </div>
             </template>
         </div>
