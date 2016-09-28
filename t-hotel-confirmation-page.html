@@ -131,7 +131,7 @@
                     TravelNxt.Behaviors.SessionBehavior
                 ],
 
-                properties: { ,
+                properties: {
 
                     /*
                      * <p>This property holds the value of selected date of selected room</p>
@@ -176,6 +176,9 @@
                     },{
                         key: 'Hotel_Room',
                         propertyName: 'selectedRoom'
+                    },{
+                        key: 'Hotel_Search_Criteria',
+                        propertyName: 'searchCriteria'
                     }];
                     this.getSession();
                 },
@@ -184,7 +187,7 @@
                  * <p>This is a translator method to set fare details data</p>
                 */
                 _setFareDetails: function () {
-                    if (!this.itinerary || !this.searchCriteria) {
+                    if (!this.bookedItinerary.itinerary || !this.searchCriteria) {
                         return;
                     }
 
@@ -200,7 +203,7 @@
                         });
                     }
 
-                    var nights = this._dateDiff(this.itinerary.stayDuration.start.date, this.itinerary.stayDuration.end.date);
+                    var nights = this._dateDiff(this.bookedItinerary.itinerary.stayDuration.start.date, this.bookedItinerary.itinerary.stayDuration.end.date);
 
                     this.$.fareDetails.itineraryFareLabel = nights + (nights > 1 ? " Nights Fare" : " Night Fare");
                     this.$.fareDetails.baseFareLabel = "Avg. per night fare x " + nights;                    
