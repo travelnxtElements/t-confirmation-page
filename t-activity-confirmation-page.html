@@ -101,7 +101,7 @@
                 <div class="margin-bottom">
                     <span class="name flex font-16">[[_capitalize(item.title, item.firstName, item.lastName)]]</span>
                     <span class="secondary-text">Confirmation # -&nbsp;</span>
-                    <span class=""> [[_getConfirmationNumber(bookedItinerary.passengerSegment)]]</span>
+                    <span class=""> [[confirmationNumber]]</span>
                 </div>
             </template>
         </div>
@@ -185,6 +185,7 @@
                     this._setPaxDetails();
                     this._setFareDetails();
                     this._getConfirmationMessage();
+                    this._setConfirmationNumber();
                 },
 
                 _syncSession: function () {
