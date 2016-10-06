@@ -86,8 +86,8 @@
             is-collapsible
             itinerary="[[bookedItinerary.itinerary]]"
             selected-option="[[selectedOption]]"
-            show-policy-error="[[!bookedItinerary.itinerary.generalPolicies
-            || !bookedItinerary.itinerary.generalPolicies.length]]"
+            cancellation-policies="[[_cancellationPolicies]]"
+            show-policy-error="[[_policyError]]"
             policies="[[bookedItinerary.itinerary.generalPolicies]]"
             itinerary="[[bookedItinerary.itinerary]]"
             header-back-icon="[[headerBackIcon]]"
@@ -154,7 +154,16 @@
                     TravelNxt.Behaviors.SessionBehavior
                 ],
 
-                properties: {                   
+                properties: {
+                    _cancellationPolicies: {
+                        type: Array,
+                        value: []
+                    },
+
+                    _policyError: {
+                        type: Boolean,
+                        value: false
+                    },
                 },
 
                 listeners: {
@@ -185,6 +194,7 @@
                     this._setFareDetails();
                     this._getConfirmationMessage();
                     this._setConfirmationNumber();
+                    this._setPolicies();
                 },
 
                 _syncSession: function () {
@@ -196,6 +206,34 @@
                         propertyName: 'selectedOption'
                     }];
                     this.getSession();
+                },
+
+                _setPolicies: function () {
+                    this._cancellationPolicies = this._decorateOtherPolicies(this.bookedItinerary.itinerary.policies);
+
+                    //set policy error flag
+                    if (!(this.bookedItinerary.itinerary.generalPolicies
+                        && this.bookedItinerary.itinerary.generalPolicies.length)
+                        && !(this.bookedItinerary.itinerary.policies
+                        && this.bookedItinerary.itinerary.policies.length)) {
+                        this._policyError = true;
+                    }
+                },
+
+                _decorateOtherPolicies: function (policies) {
+                    policies.forEach(function (policy) {
+                        if (policy.penalty.components && policy.penalty.components.length) {
+                            var fareComponents = policy.penalty.components;
+                            for (var i = 0; i < fareComponents.length; i++) {
+                                if (fareComponents[i].type.toLowerCase() == "totalfare") {
+                                    policy.penalty.totalFare = fareComponents[i].money;
+                                }
+                            }
+                        }
+                        policy.isSameDay = policy.window.start.date == policy.window.end.date;
+                    });
+
+                    return policies;
                 },
 
                 /*

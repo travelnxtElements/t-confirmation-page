@@ -78,8 +78,7 @@
             label="Policies"
             external-link
             header-icon="[[headerBackIcon]]"
-            policy-failed="[[!bookedItinerary.itinerary.generalPolicies
-            || !bookedItinerary.itinerary.generalPolicies.length]]"
+            policy-failed="[[_policyFailed]]"
             policies="[[bookedItinerary.itinerary.generalPolicies]]"
             is-data-provided-by-view>
         </t-policy>
@@ -139,7 +138,36 @@
                     TravelNxt.Behaviors.DateBehavior,
                     TravelNxt.Behaviors.PageBehavior,
                     TravelNxt.Behaviors.SessionBehavior
-                ]
+                ],
+
+                listeners: {
+                    'session-get-complete': '_updatePage'
+                },
+
+                properties: {
+                    _policyFailed: {
+                        type: Boolean,
+                        value: false
+                    }
+                },
+
+                _updatePage: function () {
+                    if (!this.bookedItinerary) {
+                        this.fire('go-to-search');
+                        return;
+                    }
+
+                    this._setFareDetails();
+
+                    this._getConfirmationMessage();
+
+                    this._setConfirmationNumber();
+
+                    if (!this.bookedItinerary.itinerary.generalPolicies
+                        || !this.bookedItinerary.itinerary.generalPolicies.length) {
+                        this._policyFailed = true;
+                    }
+                }
             });
 
         })();
